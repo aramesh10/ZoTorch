@@ -1,4 +1,4 @@
-# ZoTorch2
+# ZoTorch
 
 Zeroth-order training for any PyTorch `nn.Module`: gradients estimated from forward passes alone, by changing values
 inside the model and watching the loss.
