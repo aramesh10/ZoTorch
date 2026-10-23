@@ -17,6 +17,21 @@ for batch in data:
 
 The model's one requirement: `model(*batch)` returns per-token losses, `[batch, tokens]`.
 
+## Demos: `demo/`
+
+| | |
+|---|---|
+| `optimizers/mezo.py` | MeZO |
+| `optimizers/dust.py` | [DUST](https://qlabs.sh/research/dust), as `dust/dust.py` |
+| `optimizers/dust_optimized.py` | DUST with one draw per pass, as `dust/dust_optimized.py` |
+| `optimizers/noise.py` | the qlabs-eng/noise record, as `dust/dust_noise.py` |
+| `optimizers/noise_optimized.py` | the noise record's lower-memory settings, as `dust/dust_noise_optimized.py` |
+| `model/gpt.py` | the GPT from `dust/model.py` |
+| `train.py` | training with `--estimator mezo`, `dust` or `dust-optimized` |
+| `train_noise.py` | training with `--estimator noise` or `noise-optimized`, with the record's optimizer, schedule and end merge |
+
+Run from the repository root with `PYTHONPATH=.`, e.g. `python demo/train.py --estimator dust --data <dir>`.
+
 ## Library: `zotorch/`
 
 | | |
@@ -32,19 +47,6 @@ The model's one requirement: `model(*batch)` returns per-token losses, `[batch, 
 | `zt.noise(seed)` | noise never stored: the same seed draws it again |
 | `zt.weight_gradient(layer, input, error)` | a `Linear`'s or `Embedding`'s weight gradient from its output error |
 | `zt.optim.SGD` | `accumulate(param, grad)`, then `apply()` once per step |
-
-## Demos: `demo/`
-
-| | |
-|---|---|
-| `optimizers/mezo.py` | MeZO |
-| `optimizers/dust.py`, `dust_optimized.py` | [DUST](https://qlabs.sh/research/dust), as `dust/dust.py` and `dust/dust_optimized.py` |
-| `optimizers/noise.py`, `noise_optimized.py` | the qlabs-eng/noise record, as `dust/dust_noise.py` and `dust/dust_noise_optimized.py` |
-| `model/gpt.py` | the GPT from `dust/model.py` |
-| `train.py` | `--estimator mezo`, `dust` or `dust-optimized` |
-| `train_noise.py` | `--estimator noise` or `noise-optimized`, with the record's optimizer, schedule and end merge |
-
-Run from the repository root with `PYTHONPATH=.`, e.g. `python demo/train.py --estimator dust --data <dir>`.
 
 ## Tests
 
