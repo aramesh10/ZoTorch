@@ -21,16 +21,42 @@ The model's one requirement: `model(*batch)` returns per-token losses, `[batch, 
 
 | | |
 |---|---|
-| `optimizers/mezo.py` | MeZO |
-| `optimizers/dust.py` | [DUST](https://qlabs.sh/research/dust), as `dust/dust.py` |
-| `optimizers/dust_optimized.py` | DUST with one draw per pass, as `dust/dust_optimized.py` |
-| `optimizers/noise.py` | the qlabs-eng/noise record, as `dust/dust_noise.py` |
-| `optimizers/noise_optimized.py` | the noise record's lower-memory settings, as `dust/dust_noise_optimized.py` |
-| `model/gpt.py` | the GPT from `dust/model.py` |
+| `optimizers/mezo.py` | [MeZO](https://arxiv.org/abs/2305.17333) |
+| `optimizers/dust.py` | Dust |
+| `optimizers/dust_optimized.py` | Dust with optimizations |
+| `optimizers/noise.py` | Noise record |
+| `optimizers/noise_optimized.py` | Noise record with optimizations |
+| `model/gpt.py` | GPT model |
 | `train.py` | training with `--estimator mezo`, `dust` or `dust-optimized` |
 | `train_noise.py` | training with `--estimator noise` or `noise-optimized`, with the record's optimizer, schedule and end merge |
 
-Run from the repository root with `PYTHONPATH=.`, e.g. `python demo/train.py --estimator dust --data <dir>`.
+## Training
+
+The data is the dust repository's: `train_1M.pt`, `val.pt` and `test.pt` from its `prepare_data.py`.
+
+In Python, from the repository root:
+
+```bash
+export PYTHONPATH=.
+python demo/train.py --estimator mezo --data <dir>                                     # MeZO
+python demo/train.py --estimator dust --data <dir>                                     # Dust
+python demo/train.py --estimator dust-optimized --data <dir>                           # Dust with optimizations
+python demo/train_noise.py --data <dir> --output runs/noise                            # Noise record
+python demo/train_noise.py --estimator noise-optimized --data <dir> --output runs/noise-opt   # with optimizations
+```
+
+On Modal, one H100, with the dust repository's `dust-data` volume (runs under `/runs` are kept in `zotorch-runs`):
+
+```bash
+modal run modal_app.py --args "--estimator mezo"                                       # MeZO
+modal run modal_app.py --args "--estimator dust"                                       # Dust
+modal run modal_app.py --args "--estimator dust-optimized"                             # Dust with optimizations
+modal run modal_app.py --script train_noise.py --args "--output /runs/noise"           # Noise record
+modal run modal_app.py --script train_noise.py --args "--estimator noise-optimized --output /runs/noise-opt"
+```
+
+`train.py` takes `--steps` and `--batch`; 
+`train_noise.py` takes `--tokens 1M|10M`, `--steps` and `--eval-every`
 
 ## Library: `zotorch/`
 
